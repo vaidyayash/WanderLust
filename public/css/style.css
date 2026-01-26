@@ -11,3 +11,37 @@
 .nav-link{
   color: #222222 !important;
 }
+
+.f-info{
+  text-align: center;
+  display: flex;
+  height: 8rem;
+  background-color: #ebebeb;
+  justify-content: center;
+  flex-wrap: wrap;
+  /* align-items: space-evenly; */
+}
+
+.f-info-socials{
+  width: 100%;
+  font-size: 1.2rem;
+}
+
+.f-info-socials i{
+  margin: 1rem 0.5rem 0rem 0.5rem;
+}
+
+.f-info-links{
+  width: 100%;
+}
+
+
+.f-info-links a{
+  text-decoration: none;
+  color: #222222;
+}
+
+.f-info-links a:hover{
+  text-decoration: underline;
+  
+}
