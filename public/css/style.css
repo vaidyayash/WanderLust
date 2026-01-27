@@ -87,3 +87,14 @@ body{
   font-weight: 400;
 }
 
+.card .show-img{
+  height: 30vh;
+}
+
+.card .description{
+  color: #6c757d;
+}
+
+.btns {
+  display: flex;
+}
