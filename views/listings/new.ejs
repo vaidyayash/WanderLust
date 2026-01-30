@@ -4,16 +4,26 @@
   <div class="row">
     <div class="col-8 offset-2">
       <h3>Create a New Listing</h3>
-      <br>
-      <form method="POST" action="/listings" novalidate class="needs-validation">
+      <br />
+      <form
+        method="POST"
+        action="/listings"
+        novalidate
+        class="needs-validation"
+      >
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
             type="text"
             name="listing[title]"
             placeholder="enter title"
-            class="form-control" required
+            class="form-control"
+            required
+            minlength="5"
+            maxlength="100"
           />
+          <div class="valid-feedback">Valid Input</div>
+          <div class="invalid-feedback">Invalid Title</div>
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
@@ -21,7 +31,10 @@
             name="listing[description]"
             placeholder="enter description"
             class="form-control"
+            maxlength="500"
           ></textarea>
+          <div class="valid-feedback">Valid Input</div>
+          <div class="invalid-feedback">Description cannot exceed 500 characters</div>
         </div>
         <div class="mb-3">
           <label for="url" class="form-label">Image URL</label>
@@ -31,6 +44,8 @@
             placeholder="enter image URL/link"
             class="form-control"
           />
+          <div class="valid-feedback">Valid Input</div>
+          <div class="invalid-feedback">Invalid URL Input</div>
         </div>
         <div class="row">
           <div class="mb-3 col-md-4">
@@ -39,8 +54,13 @@
               type="number"
               name="listing[price]"
               placeholder="enter price"
-              class="form-control" required
+              class="form-control"
+              required
+              min="0"
+              step="1"
             />
+            <div class="valid-feedback">Valid Input</div>
+            <div class="invalid-feedback">Invalid Price Value</div>
           </div>
           <div class="mb-3 col-md-4">
             <label for="location" class="form-label">Location</label>
@@ -48,8 +68,11 @@
               type="text"
               name="listing[location]"
               placeholder="enter location"
-              class="form-control" required
+              class="form-control"
+              required
             />
+            <div class="valid-feedback">Valid Input</div>
+            <div class="invalid-feedback">Invalid Location</div>
           </div>
           <div class="mb-5 col-md-4">
             <label for="country" class="form-label">Country</label>
@@ -57,8 +80,11 @@
               type="text"
               name="listing[country]"
               placeholder="enter country"
-              class="form-control" required
+              class="form-control"
+              required
             />
+            <div class="valid-feedback">Valid Input</div>
+            <div class="invalid-feedback">Invalid Country Name</div>
           </div>
         </div>
         <button class="btn btn-dark">Add Listing</button>
