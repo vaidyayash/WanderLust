@@ -8,6 +8,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utilities/wrapAsync.js");
+const ExpressError = require("./utilities/expressError.js");
 
 // DATABASE CONNECTION
 main()
@@ -31,10 +32,10 @@ app.get("/", (req, res) => {
 });
 
 // Index Route
-app.get("/listings", async (req, res) => {
+app.get("/listings", wrapAsync(async (req, res) => {
   let listings = await Listing.find({});
   res.render("listings/index", { listings });
-});
+}));
 
 // New Route
 app.get("/listings/new", (req, res) => {
@@ -43,6 +44,9 @@ app.get("/listings/new", (req, res) => {
 
 // Create Route
 app.post("/listings", wrapAsync(async (req, res, next) => {
+  if(!req.body.listing){
+    throw new ExpressError(400, "Invalid Listing Input");
+  }
   let { listing } = req.body;
   let newListing = new Listing(listing);
   await newListing.save();
@@ -50,20 +54,26 @@ app.post("/listings", wrapAsync(async (req, res, next) => {
 }));
 
 // Show Route
-app.get("/listings/:id", async (req, res) => {
+app.get("/listings/:id", wrapAsync(async (req, res) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
+  if (!listing) {
+    throw new ExpressError(404, "Listing not found");
+  }
   res.render("listings/show", { listing });
-});
+}));
 
 // Update Route
-app.get("/listings/:id/edit", async (req, res) => {
+app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
+  if (!listing) {
+    throw new ExpressError(404, "Listing not found");
+  }
   res.render("listings/edit", { listing });
-});
+}));
 
-app.put("/listings/:id", async (req, res) => {
+app.put("/listings/:id", wrapAsync(async (req, res) => {
   let { listing } = req.body;
   let { id } = req.params;
   await Listing.findByIdAndUpdate(id, listing, {
@@ -71,17 +81,22 @@ app.put("/listings/:id", async (req, res) => {
     new: true,
   });
   res.redirect(`/listings/${id}`);
-});
+}));
 
 // DELETE ROUTE
-app.delete("/listings/:id", async (req, res) => {
+app.delete("/listings/:id", wrapAsync(async (req, res) => {
   let { id } = req.params;
   await Listing.findByIdAndDelete(id);
   res.redirect("/listings");
+}));
+
+app.use((req, res, next)=>{
+  next(new ExpressError(404, "Page Not Found"));
 });
 
 app.use((err, req, res, next) => {
-  res.send("Something Went Wrong");
+  let {status=500, message="Something Went Wrong"} = err;
+  res.status(status).send(message);
 });
 
 app.listen(port, () => {
