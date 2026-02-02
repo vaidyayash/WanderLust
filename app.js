@@ -9,6 +9,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utilities/wrapAsync.js");
 const ExpressError = require("./utilities/expressError.js");
+const {listingSchema} = require("./schema.js");
 
 
 // DATABASE CONNECTION
@@ -20,7 +21,6 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
 }
 
-// CRUD OPERATIONS
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -28,6 +28,18 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
+
+
+const validateListing = (req, res, next) => {
+  let {error} = listingSchema.validate(req.body);
+  if (error) {
+    throw new ExpressError(400, error.message);
+  } else{
+    next();
+  }
+}
+
+// CRUD OPERATIONS
 
 app.get("/", (req, res) => {
   res.send("App is working");
@@ -45,15 +57,13 @@ app.get("/listings/new", (req, res) => {
 });
 
 // Create Route
-app.post("/listings", wrapAsync(async (req, res, next) => {
-  if(!req.body.listing){
-    throw new ExpressError(400, "Invalid Listing Input");
-  }
-  let { listing } = req.body;
-  let newListing = new Listing(listing);
-  await newListing.save();
-  res.redirect("/listings");
-}));
+app.post(
+  "/listings", validateListing, wrapAsync(async (req, res, next) => {
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+    res.redirect("/listings");
+  }),
+);
 
 // Show Route
 app.get("/listings/:id", wrapAsync(async (req, res) => {
@@ -65,23 +75,30 @@ app.get("/listings/:id", wrapAsync(async (req, res) => {
   res.render("listings/show", { listing });
 }));
 
-// Update Route
-app.get("/listings/:id/edit", wrapAsync(async (req, res) => {
-  let { id } = req.params;
-  let listing = await Listing.findById(id);
-  if (!listing) {
-    throw new ExpressError(404, "Listing not found");
-  }
-  res.render("listings/edit", { listing });
-}));
 
-app.put("/listings/:id", wrapAsync(async (req, res) => {
-  let { listing } = req.body;
-  let { id } = req.params;
-  await Listing.findByIdAndUpdate(id, listing, {
+app.get(
+  "/listings/:id/edit", wrapAsync(async (req, res) => {
+    let { id } = req.params;
+    let listing = await Listing.findById(id);
+    if (!listing) {
+      throw new ExpressError(404, "Listing not found");
+    }
+    res.render("listings/edit", { listing });
+  }),
+);
+
+// Update Route
+app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
+  const { listing } = req.body;
+  const { id } = req.params;
+  const updatedListing = await Listing.findByIdAndUpdate(id, listing, {
     runValidators: true,
     new: true,
   });
+
+  if (!updatedListing) {
+    throw new ExpressError(404, "Listing not found");
+  }
   res.redirect(`/listings/${id}`);
 }));
 
