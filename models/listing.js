@@ -14,7 +14,7 @@ let listingSchema = new mongoose.Schema({
     maxlength: [500, "Description cannot exceed 500 characters"],
   },
   image: {
-    filename: { type: String, default: "listingimage", required:true },
+    filename: { type: String, default: "listingimage"},
     url: {
       type: String,
       default:
@@ -22,8 +22,7 @@ let listingSchema = new mongoose.Schema({
       set: (v) => (v === "" ? undefined : v),
       match: [/^https?:\/\/.+/i, "Please enter a valid image URL"],
       required: true,
-    },
-    required: true,
+    }
   },
   price: {
     type: Number,
@@ -40,6 +39,12 @@ let listingSchema = new mongoose.Schema({
     required: [true, "Country is Required"],
     trim: true,
   },
+  reviews: [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref: "Review"
+    }
+  ]
 });
 
 const Listing = mongoose.model("Listing", listingSchema);
