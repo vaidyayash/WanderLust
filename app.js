@@ -4,12 +4,14 @@ const app = express();
 const mongoose = require("mongoose");
 const port = 8080;
 const Listing = require("./models/listing.js");
+const Review = require("./models/review.js"); 
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utilities/wrapAsync.js");
 const ExpressError = require("./utilities/expressError.js");
 const {listingSchema} = require("./schema.js");
+const { reviewSchema } = require("./schema.js");
 
 
 // DATABASE CONNECTION
@@ -39,7 +41,16 @@ const validateListing = (req, res, next) => {
   }
 }
 
-// CRUD OPERATIONS
+const validateReview = (req, res, next) =>{
+  let {error} = reviewSchema.validate(req.body);
+  if(error){
+    throw new ExpressError(400, error.message);
+  } else{
+    next();
+  }
+}
+
+// CRUD OPERATIONS - LISTINGS
 
 app.get("/", (req, res) => {
   res.send("App is working");
@@ -109,6 +120,21 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
   res.redirect("/listings");
 }));
 
+
+// CRUD OPERATIONS - REVIEWS
+
+// Create Route
+app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res)=>{
+  const {id} = req.params;
+  const listing = await Listing.findById(id);
+  const review = new Review(req.body.review);
+  listing.reviews.push(review._id);
+  await review.save();
+  await listing.save();
+  res.redirect(`/listings/${id}`);
+}));
+
+
 app.use((req, res, next)=>{
   next(new ExpressError(404, "Page Not Found"));
 });
@@ -118,6 +144,9 @@ app.use((err, req, res, next) => {
   res.status(status).render("listings/error", {err});
 });
 
+
+
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
 });
+

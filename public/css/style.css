@@ -98,3 +98,9 @@ body{
 .btns {
   display: flex;
 }
+
+.review{
+  background-color: #e2e3e4;
+  border-radius: 15px;
+  padding: 10px;
+}
