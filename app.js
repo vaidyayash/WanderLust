@@ -10,8 +10,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utilities/wrapAsync.js");
 const ExpressError = require("./utilities/expressError.js");
-const {listingSchema} = require("./schema.js");
-const { reviewSchema } = require("./schema.js");
+const {listingSchema, reviewSchema} = require("./schema.js");
 
 
 // DATABASE CONNECTION
@@ -79,7 +78,7 @@ app.post(
 // Show Route
 app.get("/listings/:id", wrapAsync(async (req, res) => {
   let { id } = req.params;
-  let listing = await Listing.findById(id);
+  let listing = await Listing.findById(id).populate("reviews");
   if (!listing) {
     throw new ExpressError(404, "Listing not found");
   }

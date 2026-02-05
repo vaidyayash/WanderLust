@@ -1,0 +1,4 @@
+<% for(let i=0; i<listing.reviews.length; i++) { %>
+      <div class="review-rating" > <%= listing.reviews[i].rating %> </div>
+      <div class="review-comment"> <%= listing.reviews[i].comment %> </div>
+    <% } %>
