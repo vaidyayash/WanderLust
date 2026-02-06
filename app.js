@@ -11,6 +11,7 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utilities/wrapAsync.js");
 const ExpressError = require("./utilities/expressError.js");
 const {listingSchema, reviewSchema} = require("./schema.js");
+const review = require("./models/review.js");
 
 
 // DATABASE CONNECTION
@@ -115,6 +116,8 @@ app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
 // DELETE ROUTE
 app.delete("/listings/:id", wrapAsync(async (req, res) => {
   let { id } = req.params;
+  let listing = await Listing.findById(id);
+  await Review.deleteMany({_id: {$in: listing.reviews}});
   await Listing.findByIdAndDelete(id);
   res.redirect("/listings");
 }));
@@ -122,7 +125,7 @@ app.delete("/listings/:id", wrapAsync(async (req, res) => {
 
 // CRUD OPERATIONS - REVIEWS
 
-// Create Route
+// Create Route (Reviews)
 app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res)=>{
   const {id} = req.params;
   const listing = await Listing.findById(id);
@@ -131,6 +134,15 @@ app.post("/listings/:id/reviews", validateReview, wrapAsync(async (req, res)=>{
   await review.save();
   await listing.save();
   res.redirect(`/listings/${id}`);
+}));
+
+
+// Delete Route (Reviews)
+app.delete("/listings/:listingId/reviews/:reviewId", wrapAsync(async (req, res)=>{
+  let {listingId, reviewId} = req.params;
+  await Listing.findByIdAndUpdate(listingId, {$pull: {reviews: reviewId}});
+  await Review.findByIdAndDelete(reviewId);
+  res.redirect(`/listings/${listingId}`);
 }));
 
 
