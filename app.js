@@ -9,6 +9,7 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utilities/expressError.js");
 const listings = require("./routes/listing.js");
 const reviews = require("./routes/review.js");
+const session = require("express-session");
 
 
 // DATABASE CONNECTION
@@ -28,6 +29,19 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
+const sessionOptions = {
+  secret: "myezpzsecretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 3,
+    maxAge: 1000 * 60 * 60 * 24 * 3,
+    httpOnly: true
+  },
+};
+ 
+
+app.use(session(sessionOptions)); 
 
 
 app.get("/", (req, res) => {
