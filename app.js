@@ -7,9 +7,13 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utilities/expressError.js");
-const listings = require("./routes/listing.js");
-const reviews = require("./routes/review.js");
+const User = require("./models/user.js");
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
+const userRouter = require("./routes/user.js");
 const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 
 // DATABASE CONNECTION
@@ -42,18 +46,21 @@ const sessionOptions = {
  
 
 app.use(session(sessionOptions)); 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
 
-
-app.get("/", (req, res) => {
-  res.send("App is working");
-});
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // CRUD OPERATIONS - LISTINGS
-app.use("/listings", listings);
-
+app.use("/listings", listingRouter);
 
 // CRUD OPERATIONS - REVIEWS
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings/:id/reviews", reviewRouter);
+
+// CRUD OPERATIONS - USERS
+app.use("/", userRouter);
 
 app.use((req, res, next)=>{
   next(new ExpressError(404, "Page Not Found"));
