@@ -5,6 +5,7 @@ const ExpressError = require("../utilities/expressError.js");
 const User = require("../models/user.js");
 const { errors } = require("passport-local-mongoose");
 const passport = require("passport");
+const isLoggedIn = require("../middleware.js")
 
 router.get("/signup", (req, res) => {
   res.render("users/signup");
@@ -39,5 +40,16 @@ router.post(
     res.redirect("/listings");
   }),
 );
+
+router.get("/logout", (req, res, next)=>{
+  req.logout((err)=>{
+    if(err){
+      return next(err);
+    } else {
+      req.flash("success", "User Logged Out");
+      res.redirect("/listings");
+    }
+  });
+});
 
 module.exports = router;
