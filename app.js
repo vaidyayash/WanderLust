@@ -16,7 +16,6 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const flash = require("connect-flash");
 
-
 // DATABASE CONNECTION
 main()
   .then(() => console.log("Connection Successful"))
@@ -41,12 +40,11 @@ const sessionOptions = {
   cookie: {
     expires: Date.now() + 1000 * 60 * 60 * 24 * 3,
     maxAge: 1000 * 60 * 60 * 24 * 3,
-    httpOnly: true
+    httpOnly: true,
   },
 };
- 
 
-app.use(session(sessionOptions)); 
+app.use(session(sessionOptions));
 app.use(flash());
 
 app.use(passport.initialize());
@@ -72,16 +70,15 @@ app.use("/listings/:id/reviews", reviewRouter);
 // CRUD OPERATIONS - USERS
 app.use("/", userRouter);
 
-app.use((req, res, next)=>{
+app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found"));
 });
 
 app.use((err, req, res, next) => {
-  let {status=500, message="Something Went Wrong"} = err;
-  res.status(status).render("listings/error", {err});
+  let { status = 500, message = "Something Went Wrong" } = err;
+  res.status(status).render("listings/error", { err });
 });
 
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
 });
-

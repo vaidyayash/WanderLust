@@ -3,9 +3,9 @@ const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utilities/wrapAsync.js");
 const ExpressError = require("../utilities/expressError.js");
 const User = require("../models/user.js");
-const { errors } = require("passport-local-mongoose");
 const passport = require("passport");
-const isLoggedIn = require("../middleware.js")
+const {saveRedirectUrl} = require("../middleware.js");
+
 
 router.get("/signup", (req, res) => {
   res.render("users/signup");
@@ -13,17 +13,19 @@ router.get("/signup", (req, res) => {
 
 router.post(
   "/signup",
-  wrapAsync(async (req, res, err) => {
+  saveRedirectUrl,
+  wrapAsync(async (req, res, next) => {
     try {
       const { username, email, password } = req.body;
       const newUser = new User({ username, email });
       const registeredUser = await User.register(newUser, password);
       req.login(registeredUser, (err)=>{
         if(err){
-          next(err);
+          return next(err);
         } else {
+          const redirectUrl = res.locals.redirectUrl || "/listings";
           req.flash("success", "Welcome to WanderLust");
-          res.redirect("/listings");
+          res.redirect(redirectUrl);
         }
       });
     } catch (err) {
@@ -39,13 +41,15 @@ router.get("/login", (req, res) => {
 
 router.post(
   "/login",
+  saveRedirectUrl,
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
   }),
   wrapAsync(async (req, res) => {
     req.flash("success", "Welcome to WanderLust");
-    res.redirect("/listings");
+    let redirectUrl = res.locals.redirectUrl || "/listings";
+    res.redirect(redirectUrl);
   }),
 );
 
