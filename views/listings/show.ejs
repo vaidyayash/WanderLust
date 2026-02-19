@@ -11,7 +11,8 @@
           alt="listing_image"
         />
         <div class="card-body">
-          <br />
+          <br>
+          <p> Owned by <b><i><%= listing.owner.username %></i></b></p>
           <p class="description fs-6"><%= listing.description %></p>
           <p class="fs-6">
             <b>&#163;<%= Number(listing.price).toLocaleString("en-GB") %></b>
@@ -22,8 +23,7 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="btns offset-2">
+  </div>  <div class="btns offset-2">
     <div class="col-2 mb-4">
       <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark"
         >Edit Listing</a
@@ -34,8 +34,9 @@
         <button class="btn btn-dark">Delete Listing</button>
       </form>
     </div>
-
   </div>
+
+
   <div class="col-8 offset-2 mt-4 mb-4 review">
     <h4>Leave a Review</h4>
     <form method="POST" action="/listings/<%= listing._id %>/reviews" novalidate class="needs-validation">

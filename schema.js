@@ -12,7 +12,7 @@ module.exports.listingSchema = Joi.object({
     // image
     image: Joi.object({
       // filename
-      filename: Joi.string().default("listingimage").required(),
+      filename: Joi.string().default("listingimage"),
 
       // url
       url: Joi.string()

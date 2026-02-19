@@ -79,6 +79,8 @@ app.use((err, req, res, next) => {
   res.status(status).render("listings/error", { err });
 });
 
+
+
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
 });
