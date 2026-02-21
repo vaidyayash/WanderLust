@@ -4,6 +4,7 @@ const wrapAsync = require("../utilities/wrapAsync.js");
 const ExpressError = require("../utilities/expressError.js");
 const Listing = require("../models/listing.js");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
+const { populate } = require("../models/review.js");
 
 // Index Route
 router.get(
@@ -37,7 +38,12 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    let listing = await Listing.findById(id).populate("reviews").populate("owner");
+    let listing = await Listing.findById(id).populate({
+      path: "reviews", populate:{
+      path: "author"
+      }
+    })
+    .populate("owner");
     if (!listing) {
       throw new ExpressError(404, "Listing not found");
     }

@@ -1,5 +1,6 @@
 const ExpressError = require("./utilities/expressError.js");
 const Listing = require("./models/listing");
+const Review = require("./models/review");
 const { listingSchema, reviewSchema } = require("./schema.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
@@ -44,3 +45,13 @@ module.exports.validateReview = (req, res, next) =>{
     next();
   }
 }
+
+module.exports.isAuthor = async (req, res, next) => {
+  let { id, reviewId } = req.params;
+  let review = await Review.findById(reviewId);
+  if (!review.author._id.equals(res.locals.currUser._id)) {
+    req.flash("error", "Access Denied");
+    return res.redirect(`/listings/${id}`);
+  }
+  next();
+};
