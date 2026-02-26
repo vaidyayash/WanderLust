@@ -22,7 +22,6 @@ let listingSchema = new mongoose.Schema({
         "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=800&q=60",
       set: (v) => (v === "" ? undefined : v),
       match: [/^https?:\/\/.+/i, "Please enter a valid image URL"],
-      required: true,
     }
   },
   price: {

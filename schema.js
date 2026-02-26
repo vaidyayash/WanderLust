@@ -22,8 +22,7 @@ module.exports.listingSchema = Joi.object({
           "https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?auto=format&fit=crop&w=800&q=60",
         )
         .uri({ scheme: ["http", "https"] })
-        .required(),
-    }).required(),
+    }).optional(),
 
     // price
     price: Joi.number().min(0).required(),

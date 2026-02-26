@@ -5,6 +5,8 @@ const ExpressError = require("../utilities/expressError.js");
 const Listing = require("../models/listing.js");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 const listingController = require("../controllers/listing.js");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 // Index Route
 router.get(
@@ -20,12 +22,15 @@ router.get("/new", isLoggedIn, listingController.new);
 router.post(
   "/",
   isLoggedIn,
+  upload.single('listing[image]'),
   validateListing,
   wrapAsync(listingController.create),
 );
 
+
+
 // Show Route
-router.get(
+router.get( 
   "/:id",
   wrapAsync(listingController.show),
 );
