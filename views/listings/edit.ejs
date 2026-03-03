@@ -5,7 +5,7 @@
     <div class="col-8 offset-2">
       <h3>Edit Listing</h3>
       <br>
-      <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" novalidate class="needs-validation">
+      <form method="POST" action="/listings/<%=listing._id%>?_method=PUT" novalidate class="needs-validation" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
@@ -27,17 +27,17 @@
           <div class="valid-feedback">Valid Input</div>
           <div class="invalid-feedback">Description cannot exceed 500 characters</div>
         </div>
+
+       
         <div class="mb-3">
-          <label for="url" class="form-label">Image URL</label>
+          <label for="url" class="form-label">Upload New Image</label>
           <input
-            type="url"
-            name="listing[image][url]"
-            value="<%=listing.image.url%>"
-            class="form-control"
-          />
-          <div class="valid-feedback">Valid Input</div>
-          <div class="invalid-feedback">Invalid URL Input</div>
+            type="file"
+            name="listing[image]"
+            class="form-control"/>
         </div>
+
+
         <div class="row">
           <div class="mb-3 col-md-4">
             <label for="price" class="form-label">Price</label>

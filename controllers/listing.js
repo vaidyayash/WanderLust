@@ -14,7 +14,10 @@ module.exports.new = (req, res) => {
 
 // Create Route
 module.exports.create = async (req, res, next) => {
+  let url = req.file.path;
+  let filename = req.file.filename;
   const newListing = new Listing(req.body.listing);
+  newListing.image = { url, filename };
   newListing.owner = req.user._id;
   await newListing.save();
   res.redirect("/listings");
@@ -57,12 +60,18 @@ module.exports.update = async (req, res) => {
     new: true,
   });
 
+  if (req.file) {
+    let url = req.file.path;
+    let filename = req.file.filename;
+    updatedListing.image = { url, filename };
+    await updatedListing.save();
+  }
+
   if (!updatedListing) {
     throw new ExpressError(404, "Listing not found");
   }
   res.redirect(`/listings/${id}`);
 };
-
 
 // DELETE ROUTE
 module.exports.delete = async (req, res) => {

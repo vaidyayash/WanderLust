@@ -6,7 +6,8 @@ const Listing = require("../models/listing.js");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
 const listingController = require("../controllers/listing.js");
 const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
+const {storage} = require("../cloudConfig.js");
+const upload = multer({ storage });
 
 // Index Route
 router.get(
@@ -48,6 +49,7 @@ router.put(
   "/:id",
   isLoggedIn,
   isOwner,
+  upload.single("listing[image]"),
   validateListing,
   wrapAsync(listingController.update),
 );
